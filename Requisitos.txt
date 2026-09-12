@@ -1,0 +1,16 @@
+# Requisitos do projeto de automação de downloads de relatórios
+#
+# Python: requer Python 3.9 ou superior (recomendado 3.11+)
+#          https://www.python.org/downloads/
+#          Ao instalar no Windows, marque "Add Python to PATH".
+#
+# Navegador: o rodar.bat já cuida de baixar o Edge do Playwright
+#            automaticamente (python -m playwright install msedge),
+#            não precisa instalar nada manualmente para isso.
+#
+# Instalação manual (se não for usar o rodar.bat):
+#   pip install -r requisitos.txt
+#   python -m playwright install msedge
+
+playwright>=1.47
+python-dotenv>=1.0
