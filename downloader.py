@@ -5,7 +5,7 @@ import os
 os.makedirs("downloads", exist_ok=True)
 
 from playwright.async_api import async_playwright
-from auth import fazer_login
+from auth import tentar_login
 from config import RELATORIOS
 
 print("DOWNLOADER IMPORTADO")
@@ -56,8 +56,9 @@ async def baixar_todos_os_relatorios(periodo_inicio, periodo_fim):
             accept_downloads=True
         )
 
-        # Login uma única vez; todas as abas abaixo reaproveitam a sessão.
-        await fazer_login(context)
+        # Pega as credenciais (do .env ou console) e tenta logar,
+        # com retentativa automática se a senha salva estiver errada.
+        await tentar_login(context)
 
         # Dispara TODOS os relatórios ao mesmo tempo (uma aba cada).
         tarefas = [
