@@ -1,0 +1,22 @@
+# Credenciais - NUNCA subir isso pro GitHub
+.env
+
+# Sessao salva do navegador (pode conter token de login)
+sessao_salva.json
+
+# Ambiente virtual do Python
+venv/
+
+# Arquivos baixados pelo script
+downloads/
+relatorios_baixados/
+
+# Cache do Python
+__pycache__/
+*.pyc
+
+# Arquivo de controle do atalho (gerado automaticamente pelo rodar.bat)
+.atalho_criado
+
+# Screenshot de debug gerado pelo compensacao.py
+datas_preenchidas.png
