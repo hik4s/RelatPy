@@ -5,15 +5,21 @@ RELATORIOS = [
         "empresa_desejada": "ESS",
         "periodo_apuracao": "MENSAL",
         "nome_arquivo": "detalhamento_compensacao.csv",
-        "formato_data": "datahora",
+        "formato_data": "datahora"
     },
 
     {
     "modulo": "reclamacao",
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatreclamecoes",
     "empresa_desejada": "ESS",
-    "periodo_apuracao": "MENSAL",
     "nome_arquivo": "Reclamacao.csv",
+    "formato_data": "datahora"
+    },
+    {
+    "modulo": "interrupcoes_cliente",
+    "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupcoes",
+    "empresa_desejada": "ESS",
+    "nome_arquivo": "Interrupcoes_Clientes.csv",
     "formato_data": "datahora"
     }
     # --- Exemplo de como adicionar o 2º relatório ---

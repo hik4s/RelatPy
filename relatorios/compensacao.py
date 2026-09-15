@@ -22,6 +22,7 @@ async def processar(page, info, periodo_inicio, periodo_fim):
     print("4- Pesquisando")
 
     await pesquisar(page)
+    await aguardar_fim_carregamento(page)
     await abrir_relatorio(page)
     await selecionar_relatorio(page)
     await abrir_detalhamento(page)
@@ -90,6 +91,40 @@ async def pesquisar(page):
     await page.get_by_role("button", name="Pesquisar").click()
     await page.wait_for_timeout(1000)
     print("[OK] Pesquisa executada.")
+
+async def aguardar_fim_carregamento(page):
+
+    loading = page.get_by_text(
+        "Carregando...",
+        exact=True
+    )
+
+    try:
+
+        await loading.wait_for(
+            state="visible",
+            timeout=5000
+        )
+
+        print(
+            "[INFO] Carregando encontrado. Aguardando finalizar..."
+        )
+
+        await loading.wait_for(
+            state="hidden",
+            timeout=120000
+        )
+
+        print(
+            "[OK] Carregamento finalizado."
+        )
+
+    except Exception:
+
+        # O carregamento nunca apareceu
+        print(
+            "[INFO] Nenhum carregamento detectado."
+        )
 
 
 async def abrir_relatorio(page):

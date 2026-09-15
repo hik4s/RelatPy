@@ -9,10 +9,10 @@ from relatorios.compensacao import (
     baixar_arquivo
 )
 
-print("RECLAMACAO IMPORTADO")
+print("INTERRUPCOES CLIENTE IMPORTADO")
 
 
-async def selecionar_empresa_reclamacao(
+async def selecionar_empresa_interrupcoes(
     page,
     empresa="ESS"
 ):
@@ -32,13 +32,11 @@ async def selecionar_empresa_reclamacao(
     )
 
 
-async def preencher_datas_reclamacao(
+async def preencher_datas_interrupcoes(
     page,
     data_inicio,
     data_fim
 ):
-    # Reclamação aceita:
-    # dd/mm/yyyy hh:mm
 
     data_inicio = data_inicio[:16]
     data_fim = data_fim[:16]
@@ -82,11 +80,13 @@ async def preencher_datas_reclamacao(
     )
 
 
-async def abrir_relatorio_reclamacao(page):
+async def abrir_relatorio_interrupcoes(
+    page
+):
 
     aba = page.get_by_role(
         "tab",
-        name="Reclamações #0"
+        name="Interrupções por Cliente #0"
     )
 
     await aba.wait_for()
@@ -94,10 +94,12 @@ async def abrir_relatorio_reclamacao(page):
     await aba.click()
 
     print(
-        "[OK] Aba Reclamações #0 aberta."
+        "[OK] Aba Interrupções por Cliente #0 aberta."
     )
 
-
+print(
+    "=== INTERRUPCOES CLIENTE ==="
+)
 async def processar(
     page,
     info,
@@ -105,61 +107,89 @@ async def processar(
     periodo_fim
 ):
 
-    print("=== RECLAMACAO ===")
+    print(
+        "=== INTERRUPCOES CLIENTE ==="
+    )
 
-    print("1- Selecionando Empresa")
+    print(
+        "1- Selecionando Empresa"
+    )
 
-    await selecionar_empresa_reclamacao(
+    await selecionar_empresa_interrupcoes(
         page,
         info["empresa_desejada"]
     )
 
-    await page.wait_for_timeout(2000)
+    await page.wait_for_timeout(
+        2000
+    )
 
-    print("2- Preenchendo datas")
+    print(
+        "2- Preenchendo datas"
+    )
 
-    await preencher_datas_reclamacao(
+    await preencher_datas_interrupcoes(
         page,
         periodo_inicio,
         periodo_fim
     )
 
-    print("3- Pesquisando")
+    print(
+        "3- Pesquisando"
+    )
 
     await pesquisar(page)
 
-    print("3.1- Carregando...")
-    await aguardar_fim_carregamento(page)
+    print(
+        "3.1- Abrindo aba Interrupções"
+    )
 
-    print("3.2- Abrindo aba Reclamações")
+    await aguardar_fim_carregamento(page
+    )
 
-    await abrir_relatorio_reclamacao(page)
+    await abrir_relatorio_interrupcoes(
+        page
+    )
 
-    print("4- Exportando")
+    print(
+        "4- Exportando"
+    )
 
     await exportar(page)
 
-    print("5- Confirmando")
+    print(
+        "5- Confirmando"
+    )
 
     await apertar_ok(page)
 
-    print("6- Atualizando página")
+    print(
+        "6- Atualizando página"
+    )
 
     await atualizar_pagina(page)
 
-    print("7- Abrindo downloads")
+    print(
+        "7- Abrindo downloads"
+    )
 
     await abrir_downloads(page)
 
-    print("8- Aguardando processamento")
+    print(
+        "8- Aguardando processamento"
+    )
 
     await aguardar_processamento(page)
 
-    print("9- Reabrindo downloads")
+    print(
+        "9- Reabrindo downloads"
+    )
 
     await abrir_downloads(page)
 
-    print("10- Baixando arquivo")
+    print(
+        "10- Baixando arquivo"
+    )
 
     await baixar_arquivo(
         page,
@@ -167,5 +197,5 @@ async def processar(
     )
 
     print(
-        "[OK] Reclamação finalizada."
+        "[OK] Interrupções por Cliente finalizado."
     )
