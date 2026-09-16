@@ -9,13 +9,14 @@ from relatorios.compensacao import (
     baixar_arquivo
 )
 
-print("RECLAMACAO IMPORTADO")
+print("INTERRUPCOES EVENTO IMPORTADO")
 
 
-async def selecionar_empresa_reclamacao(
+async def selecionar_empresa_interrupcoes_evento(
     page,
     empresa="ESS"
 ):
+
     empresa_select = page.locator(
         "app-dd-empresas p-select"
     ).first
@@ -32,13 +33,11 @@ async def selecionar_empresa_reclamacao(
     )
 
 
-async def preencher_datas_reclamacao(
+async def preencher_datas_interrupcoes_evento(
     page,
     data_inicio,
     data_fim
 ):
-    # Reclamação aceita:
-    # dd/mm/yyyy hh:mm
 
     data_inicio = data_inicio[:16]
     data_fim = data_fim[:16]
@@ -54,6 +53,7 @@ async def preencher_datas_reclamacao(
     )
 
     if total < 2:
+
         raise Exception(
             "Não foram encontrados os campos de data."
         )
@@ -82,13 +82,50 @@ async def preencher_datas_reclamacao(
     )
 
 
-async def abrir_relatorio_reclamacao(
+async def desativar_candidato_calculo(
+    page
+):
+
+    try:
+
+        switch = page.locator(
+            "p-inputswitch"
+        ).first
+
+        checkbox = switch.locator(
+            'input[role="switch"]'
+        )
+
+        marcado = await checkbox.is_checked()
+
+        if marcado:
+
+            await switch.click()
+
+            print(
+                "[OK] Cand. ao cálculo desativado."
+            )
+
+        else:
+
+            print(
+                "[INFO] Cand. ao cálculo já estava desativado."
+            )
+
+    except Exception as erro:
+
+        raise Exception(
+            f"Erro ao alterar Cand. ao cálculo: {erro}"
+        )
+
+
+async def abrir_relatorio_interrupcoes_evento(
     page
 ):
 
     aba = page.get_by_role(
         "tab",
-        name="Reclamações #0"
+        name="Interrupções por Evento #0"
     )
 
     await aba.wait_for(
@@ -99,7 +136,7 @@ async def abrir_relatorio_reclamacao(
     await aba.click()
 
     print(
-        "[OK] Aba Reclamações #0 aberta."
+        "[OK] Aba Interrupções por Evento #0 aberta."
     )
 
 
@@ -110,11 +147,15 @@ async def processar(
     periodo_fim
 ):
 
-    print("=== RECLAMACAO ===")
+    print(
+        "=== INTERRUPCOES EVENTO ==="
+    )
 
-    print("1- Selecionando Empresa")
+    print(
+        "1- Selecionando Empresa"
+    )
 
-    await selecionar_empresa_reclamacao(
+    await selecionar_empresa_interrupcoes_evento(
         page,
         info["empresa_desejada"]
     )
@@ -123,47 +164,69 @@ async def processar(
         2000
     )
 
-    print("2- Preenchendo datas")
+    print(
+        "2- Preenchendo Datas"
+    )
 
-    await preencher_datas_reclamacao(
+    await preencher_datas_interrupcoes_evento(
         page,
         periodo_inicio,
         periodo_fim
     )
 
-    print("3- Pesquisando")
+    print(
+        "3- Desativando Cand. ao cálculo"
+    )
+
+    await desativar_candidato_calculo(
+        page
+    )
+
+    print(
+        "4- Pesquisando"
+    )
 
     await pesquisar(page)
-
-    print("3.1- Carregando...")
 
     await aguardar_fim_carregamento(
         page
     )
 
-    print("3.2- Abrindo aba Reclamações")
+    print(
+        "5- Abrindo aba Interrupções por Evento"
+    )
 
-    await abrir_relatorio_reclamacao(
+    await abrir_relatorio_interrupcoes_evento(
         page
     )
 
-    print("4- Exportando")
+    print(
+        "6- Exportando"
+    )
 
     await exportar(page)
 
-    print("5- Confirmando")
+    print(
+        "7- Confirmando"
+    )
 
     await apertar_ok(page)
 
-    print("6- Atualizando página")
+    print(
+        "8- Atualizando página"
+    )
 
     await atualizar_pagina(page)
 
-    print("7- Abrindo downloads")
+    print(
+        "9- Abrindo downloads"
+    )
 
     await abrir_downloads(page)
 
-    print("8- Aguardando processamento")
+    print(
+        "10- Aguardando processamento"
+    )
 
     status_exportacao = await aguardar_processamento(
         page
@@ -180,11 +243,15 @@ async def processar(
             "arquivo": info["nome_arquivo"]
         }
 
-    print("9- Reabrindo downloads")
+    print(
+        "11- Reabrindo downloads"
+    )
 
     await abrir_downloads(page)
 
-    print("10- Baixando arquivo")
+    print(
+        "12- Baixando arquivo"
+    )
 
     await baixar_arquivo(
         page,
@@ -192,7 +259,7 @@ async def processar(
     )
 
     print(
-        "[OK] Reclamação finalizada."
+        "[OK] Interrupções por Evento finalizado."
     )
 
     return {

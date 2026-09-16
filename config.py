@@ -15,11 +15,35 @@ RELATORIOS = [
     "nome_arquivo": "Reclamacao.csv",
     "formato_data": "datahora"
     },
+
     {
     "modulo": "interrupcoes_cliente",
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupcoes",
     "empresa_desejada": "ESS",
     "nome_arquivo": "Interrupcoes_Clientes.csv",
+    "formato_data": "datahora"
+    },
+
+    {
+    "modulo": "todas_ocorrencias",
+    "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatatendtodasocorrencias",
+    "empresa_desejada": "ESS",
+    "nome_arquivo": "TodasOcorrencias.csv",
+    "formato_data": "datahora"
+    },
+
+    {
+    "modulo": "dia_critico",
+    "nome_arquivo": "Dia_Critico.csv",
+    "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatdiacritico",
+    "formato_data": "datahora"
+    },
+
+    {
+    "modulo": "interrupcoes_evento",
+    "nome_arquivo": "Interrupcoes_Evento.csv",
+    "empresa_desejada": "ESS",
+    "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupevento",
     "formato_data": "datahora"
     }
     # --- Exemplo de como adicionar o 2º relatório ---

@@ -9,10 +9,10 @@ from relatorios.compensacao import (
     baixar_arquivo
 )
 
-print("RECLAMACAO IMPORTADO")
+print("TODAS OCORRENCIAS IMPORTADO")
 
 
-async def selecionar_empresa_reclamacao(
+async def selecionar_empresa_todas_ocorrencias(
     page,
     empresa="ESS"
 ):
@@ -32,13 +32,11 @@ async def selecionar_empresa_reclamacao(
     )
 
 
-async def preencher_datas_reclamacao(
+async def preencher_datas_todas_ocorrencias(
     page,
     data_inicio,
     data_fim
 ):
-    # Reclamação aceita:
-    # dd/mm/yyyy hh:mm
 
     data_inicio = data_inicio[:16]
     data_fim = data_fim[:16]
@@ -82,13 +80,13 @@ async def preencher_datas_reclamacao(
     )
 
 
-async def abrir_relatorio_reclamacao(
+async def abrir_relatorio_todas_ocorrencias(
     page
 ):
 
     aba = page.get_by_role(
         "tab",
-        name="Reclamações #0"
+        name="Todas as Ocorrências #0"
     )
 
     await aba.wait_for(
@@ -99,7 +97,7 @@ async def abrir_relatorio_reclamacao(
     await aba.click()
 
     print(
-        "[OK] Aba Reclamações #0 aberta."
+        "[OK] Aba Todas as Ocorrências #0 aberta."
     )
 
 
@@ -110,11 +108,15 @@ async def processar(
     periodo_fim
 ):
 
-    print("=== RECLAMACAO ===")
+    print(
+        "=== TODAS OCORRENCIAS ==="
+    )
 
-    print("1- Selecionando Empresa")
+    print(
+        "1- Selecionando Empresa"
+    )
 
-    await selecionar_empresa_reclamacao(
+    await selecionar_empresa_todas_ocorrencias(
         page,
         info["empresa_desejada"]
     )
@@ -123,47 +125,61 @@ async def processar(
         2000
     )
 
-    print("2- Preenchendo datas")
+    print(
+        "2- Preenchendo datas"
+    )
 
-    await preencher_datas_reclamacao(
+    await preencher_datas_todas_ocorrencias(
         page,
         periodo_inicio,
         periodo_fim
     )
 
-    print("3- Pesquisando")
+    print(
+        "3- Pesquisando"
+    )
 
     await pesquisar(page)
-
-    print("3.1- Carregando...")
 
     await aguardar_fim_carregamento(
         page
     )
 
-    print("3.2- Abrindo aba Reclamações")
+    print(
+        "3.1- Abrindo aba Todas as Ocorrências"
+    )
 
-    await abrir_relatorio_reclamacao(
+    await abrir_relatorio_todas_ocorrencias(
         page
     )
 
-    print("4- Exportando")
+    print(
+        "4- Exportando"
+    )
 
     await exportar(page)
 
-    print("5- Confirmando")
+    print(
+        "5- Confirmando"
+    )
 
     await apertar_ok(page)
 
-    print("6- Atualizando página")
+    print(
+        "6- Atualizando página"
+    )
 
     await atualizar_pagina(page)
 
-    print("7- Abrindo downloads")
+    print(
+        "7- Abrindo downloads"
+    )
 
     await abrir_downloads(page)
 
-    print("8- Aguardando processamento")
+    print(
+        "8- Aguardando processamento"
+    )
 
     status_exportacao = await aguardar_processamento(
         page
@@ -180,11 +196,15 @@ async def processar(
             "arquivo": info["nome_arquivo"]
         }
 
-    print("9- Reabrindo downloads")
+    print(
+        "9- Reabrindo downloads"
+    )
 
     await abrir_downloads(page)
 
-    print("10- Baixando arquivo")
+    print(
+        "10- Baixando arquivo"
+    )
 
     await baixar_arquivo(
         page,
@@ -192,7 +212,7 @@ async def processar(
     )
 
     print(
-        "[OK] Reclamação finalizada."
+        "[OK] Todas as Ocorrências finalizado."
     )
 
     return {

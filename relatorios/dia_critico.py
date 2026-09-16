@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from relatorios.compensacao import (
     pesquisar,
     aguardar_fim_carregamento,
@@ -9,84 +11,86 @@ from relatorios.compensacao import (
     baixar_arquivo
 )
 
-print("INTERRUPCOES CLIENTE IMPORTADO")
+print("DIA CRITICO IMPORTADO")
 
 
-async def selecionar_empresa_interrupcoes(
+def obter_ano_mes(periodo_inicio):
+
+    data = datetime.strptime(
+        periodo_inicio,
+        "%d/%m/%Y %H:%M:%S"
+    )
+
+    meses = {
+        1: "Janeiro",
+        2: "Fevereiro",
+        3: "Março",
+        4: "Abril",
+        5: "Maio",
+        6: "Junho",
+        7: "Julho",
+        8: "Agosto",
+        9: "Setembro",
+        10: "Outubro",
+        11: "Novembro",
+        12: "Dezembro"
+    }
+
+    return (
+        str(data.year),
+        meses[data.month]
+    )
+
+
+async def selecionar_ano(
     page,
-    empresa="ESS"
+    ano
 ):
-    empresa_select = page.locator(
-        "app-dd-empresas p-select"
-    ).first
 
-    await empresa_select.click()
+    dropdown = page.locator(
+        "p-dropdown"
+    ).nth(0)
+
+    await dropdown.click()
 
     await page.get_by_text(
-        empresa,
+        str(ano),
         exact=True
     ).click()
 
     print(
-        f"Empresa selecionada: {empresa}"
+        f"Ano selecionado: {ano}"
     )
 
 
-async def preencher_datas_interrupcoes(
+async def selecionar_mes(
     page,
-    data_inicio,
-    data_fim
+    mes
 ):
 
-    data_inicio = data_inicio[:16]
-    data_fim = data_fim[:16]
+    dropdown = page.locator(
+        "p-dropdown"
+    ).nth(1)
 
-    campos = page.locator(
-        "input.p-datepicker-input"
-    )
+    await dropdown.click()
 
-    total = await campos.count()
-
-    print(
-        f"Datepickers encontrados: {total}"
-    )
-
-    if total < 2:
-        raise Exception(
-            "Não foram encontrados os campos de data."
-        )
-
-    campo_inicio = campos.nth(0)
-    campo_fim = campos.nth(1)
-
-    await campo_inicio.click()
-    await campo_inicio.press("Control+A")
-    await campo_inicio.fill(data_inicio)
-    await campo_inicio.press("Tab")
+    await page.get_by_text(
+        mes,
+        exact=True
+    ).click()
 
     print(
-        "Campo início:",
-        await campo_inicio.input_value()
-    )
-
-    await campo_fim.click()
-    await campo_fim.press("Control+A")
-    await campo_fim.fill(data_fim)
-    await campo_fim.press("Tab")
-
-    print(
-        "Campo fim:",
-        await campo_fim.input_value()
+        f"Mês selecionado: {mes}"
     )
 
 
-async def abrir_relatorio_interrupcoes(
+async def abrir_relatorio_dia_critico(
     page
 ):
 
     aba = page.get_by_role(
         "tab",
-        name="Interrupções por Cliente #0"
+        name="Dia Crítico #0"
     )
 
     await aba.wait_for(
@@ -97,7 +101,7 @@ async def abrir_relatorio_interrupcoes(
     await aba.click()
 
     print(
-        "[OK] Aba Interrupções por Cliente #0 aberta."
+        "[OK] Aba Dia Crítico #0 aberta."
     )
 
 
@@ -109,30 +113,29 @@ async def processar(
 ):
 
     print(
-        "=== INTERRUPCOES CLIENTE ==="
+        "=== DIA CRITICO ==="
+    )
+
+    ano, mes = obter_ano_mes(
+        periodo_inicio
     )
 
     print(
-        "1- Selecionando Empresa"
+        "1- Selecionando Ano"
     )
 
-    await selecionar_empresa_interrupcoes(
+    await selecionar_ano(
         page,
-        info["empresa_desejada"]
-    )
-
-    await page.wait_for_timeout(
-        2000
+        ano
     )
 
     print(
-        "2- Preenchendo datas"
+        "2- Selecionando Mês"
     )
 
-    await preencher_datas_interrupcoes(
+    await selecionar_mes(
         page,
-        periodo_inicio,
-        periodo_fim
+        mes
     )
 
     print(
@@ -146,10 +149,10 @@ async def processar(
     )
 
     print(
-        "3.1- Abrindo aba Interrupções"
+        "3.1- Abrindo aba Dia Crítico"
     )
 
-    await abrir_relatorio_interrupcoes(
+    await abrir_relatorio_dia_critico(
         page
     )
 
@@ -212,7 +215,7 @@ async def processar(
     )
 
     print(
-        "[OK] Interrupções por Cliente finalizado."
+        "[OK] Dia Crítico finalizado."
     )
 
     return {

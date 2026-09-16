@@ -3,39 +3,111 @@ import os
 print("COMPENSACAO IMPORTADO")
 
 
-async def processar(page, info, periodo_inicio, periodo_fim):
+async def processar(
+    page,
+    info,
+    periodo_inicio,
+    periodo_fim
+):
     """
     Ponto de entrada padrão chamado pelo downloader.py.
     Executa toda a sequência específica do relatório de Compensação.
     """
+
     print("1- Selecionando Empresa")
-    await selecionar_empresa(page, info["empresa_desejada"])
+
+    await selecionar_empresa(
+        page,
+        info["empresa_desejada"]
+    )
 
     print("2- Preenchendo datas")
-    await preencher_datas_compensacao(page, periodo_inicio, periodo_fim)
+
+    await preencher_datas_compensacao(
+        page,
+        periodo_inicio,
+        periodo_fim
+    )
 
     print("3- Preenchendo período")
-    await selecionar_periodo_apuracao(page, info["periodo_apuracao"])
 
-    print("[OK] Empresa, datas e período preenchidos.")
+    await selecionar_periodo_apuracao(
+        page,
+        info["periodo_apuracao"]
+    )
+
+    print(
+        "[OK] Empresa, datas e período preenchidos."
+    )
 
     print("4- Pesquisando")
 
     await pesquisar(page)
-    await aguardar_fim_carregamento(page)
+
+    await aguardar_fim_carregamento(
+        page
+    )
+
     await abrir_relatorio(page)
+
     await selecionar_relatorio(page)
+
     await abrir_detalhamento(page)
-    await abrir_aba_detalhamento_compensacao(page)
+
+    await abrir_aba_detalhamento_compensacao(
+        page
+    )
+
     await exportar(page)
+
     await apertar_ok(page)
+
     await atualizar_pagina(page)
+
     await abrir_downloads(page)
-    await aguardar_processamento(page)
+
+    print(
+        "8- Aguardando processamento"
+    )
+
+    status_exportacao = await aguardar_processamento(
+        page
+    )
+
+    if status_exportacao == "REMOVIDO":
+
+        print(
+            "[ERRO] Exportação removida pelo sistema."
+        )
+
+        return {
+            "status": "REMOVIDO",
+            "arquivo": info["nome_arquivo"]
+        }
+
+    print(
+        "9- Reabrindo downloads"
+    )
+
+    await abrir_downloads(page)
+
+    print(
+        "10- Baixando arquivo"
+    )
+
     await baixar_arquivo(
-    page,
-    info["nome_arquivo"]
-)
+        page,
+        info["nome_arquivo"]
+    )
+
+    print(
+        "[OK] Relatório finalizado."
+    )
+
+    return {
+        "status": "CONCLUIDO",
+        "arquivo": info["nome_arquivo"]
+    }
 
 
 async def selecionar_empresa(page, empresa="ESS"):
@@ -242,21 +314,58 @@ async def aguardar_processamento(page):
 
     while True:
 
-        badge = page.get_by_text(
-            "PROCESSANDO",
-            exact=True
+        cards = page.locator(
+            "div.p-card-content"
         )
 
-        if await badge.count() == 0:
+        total_cards = await cards.count()
+
+        if total_cards == 0:
+
+            print(
+                "[INFO] Nenhum card encontrado."
+            )
+
+            await atualizar_pagina(page)
+
+            await abrir_downloads(page)
+
+            continue
+
+        texto = await cards.nth(0).inner_text()
+
+        texto_upper = texto.upper()
+
+        if "PROCESSANDO" in texto_upper:
+
+            print(
+                "[INFO] Ainda processando..."
+            )
+
+            await atualizar_pagina(page)
+
+            await abrir_downloads(page)
+
+            continue
+
+        if "CONCLUÍDO" in texto_upper:
 
             print(
                 "[OK] Processamento concluído."
             )
 
-            break
+            return "CONCLUIDO"
+
+        if "REMOVIDO" in texto_upper:
+
+            print(
+                "[ERRO] Exportação removida."
+            )
+
+            return "REMOVIDO"
 
         print(
-            "[INFO] Ainda processando..."
+            "[INFO] Status não identificado."
         )
 
         await atualizar_pagina(page)
