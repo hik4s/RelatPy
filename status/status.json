@@ -1,0 +1,37 @@
+{
+    "compensacao": {
+        "status": "CONCLUIDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:03:42"
+    },
+    "reclamacao": {
+        "status": "CONCLUIDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:03:37"
+    },
+    "interrupcoes_cliente": {
+        "status": "CONCLUIDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:04:57"
+    },
+    "todas_ocorrencias": {
+        "status": "CONCLUIDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:05:12"
+    },
+    "dia_critico": {
+        "status": "CONCLUIDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:05:27"
+    },
+    "interrupcoes_evento": {
+        "status": "CONCLUIDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:04:18"
+    },
+    "iqos_resultados": {
+        "status": "EXECUTANDO",
+        "detalhe": null,
+        "ultima_atualizacao": "17/09/2026 18:05:27"
+    }
+}

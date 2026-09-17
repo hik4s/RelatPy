@@ -1,6 +1,7 @@
 RELATORIOS = [
     {
         "modulo": "compensacao",              # nome do arquivo em relatorios/ (sem .py)
+        "paralelo": True,
         "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatcompensacao",
         "empresa_desejada": "ESS",
         "periodo_apuracao": "MENSAL",
@@ -10,6 +11,7 @@ RELATORIOS = [
 
     {
     "modulo": "reclamacao",
+    "paralelo": True,
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatreclamecoes",
     "empresa_desejada": "ESS",
     "nome_arquivo": "Reclamacao.csv",
@@ -18,6 +20,7 @@ RELATORIOS = [
 
     {
     "modulo": "interrupcoes_cliente",
+    "paralelo": True,
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupcoes",
     "empresa_desejada": "ESS",
     "nome_arquivo": "Interrupcoes_Clientes.csv",
@@ -26,6 +29,7 @@ RELATORIOS = [
 
     {
     "modulo": "todas_ocorrencias",
+    "paralelo": False,
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatatendtodasocorrencias",
     "empresa_desejada": "ESS",
     "nome_arquivo": "TodasOcorrencias.csv",
@@ -34,6 +38,7 @@ RELATORIOS = [
 
     {
     "modulo": "dia_critico",
+    "paralelo": False,
     "nome_arquivo": "Dia_Critico.csv",
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatdiacritico",
     "formato_data": "datahora"
@@ -41,6 +46,7 @@ RELATORIOS = [
 
     {
     "modulo": "interrupcoes_evento",
+    "paralelo": True,
     "nome_arquivo": "Interrupcoes_Evento.csv",
     "empresa_desejada": "ESS",
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupevento",
@@ -48,6 +54,7 @@ RELATORIOS = [
     },
     {
     "modulo": "iqos_resultados",
+    "paralelo": False,
     "url": "https://indicadoresenergisaess.scl.corp/iqos/#/listaresultados",
     "nome_arquivo": "ATENDIMENTO_CHEIO"
     }

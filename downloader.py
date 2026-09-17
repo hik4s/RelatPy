@@ -7,6 +7,12 @@ from playwright.async_api import async_playwright
 from auth import tentar_login
 from config import RELATORIOS
 
+from core.executor import (
+    executar_relatorio,
+    executar_lote,
+    inicializar_status
+)
+
 os.makedirs(
     "downloads",
     exist_ok=True
@@ -105,12 +111,15 @@ async def baixar_um_relatorio(
     try:
 
         print("\n" + "=" * 60)
+
         print(
             f"Iniciando módulo: {info['modulo']}"
         )
+
         print(
             f"Arquivo esperado: {info['nome_arquivo']}"
         )
+
         print("=" * 60)
 
         await page.goto(
@@ -152,6 +161,8 @@ async def baixar_um_relatorio(
             f"[OK] {info['nome_arquivo']} finalizado."
         )
 
+        return resultado
+
     except Exception as erro:
 
         print(
@@ -171,6 +182,8 @@ async def baixar_um_relatorio(
 
         })
 
+        raise
+
     finally:
 
         await page.close()
@@ -185,6 +198,34 @@ async def baixar_todos_os_relatorios(
 
     print(
         "Entrou na função baixar_todos_os_relatorios"
+    )
+
+    inicializar_status(
+        RELATORIOS
+    )
+
+    print(
+        "PARALELO:",
+        [
+            r["modulo"]
+            for r in RELATORIOS
+            if r.get(
+                "paralelo",
+                False
+            )
+        ]
+    )
+
+    print(
+        "SEQUENCIAL:",
+        [
+            r["modulo"]
+            for r in RELATORIOS
+            if not r.get(
+                "paralelo",
+                False
+            )
+        ]
     )
 
     async with async_playwright() as p:
@@ -208,18 +249,88 @@ async def baixar_todos_os_relatorios(
             f"Total de relatórios: {len(RELATORIOS)}"
         )
 
+        paralelos = []
+        sequenciais = []
+
         for info in RELATORIOS:
 
+            if info.get(
+                "paralelo",
+                False
+            ):
+
+                paralelos.append(
+                    info
+                )
+
+            else:
+
+                sequenciais.append(
+                    info
+                )
+
+        print(
+            f"\nRelatórios paralelos: {len(paralelos)}"
+        )
+
+        print(
+            f"Relatórios sequenciais: {len(sequenciais)}"
+        )
+
+        tarefas = []
+
+        for info in paralelos:
+
             print(
-                f"\nIniciando: {info['modulo']}"
+                f"\nAgendando paralelo: {info['modulo']}"
             )
 
-            await baixar_um_relatorio(
-                context,
-                info,
-                periodo_inicio,
-                periodo_fim
+            tarefas.append(
+
+                executar_relatorio(
+
+                    baixar_um_relatorio(
+                        context,
+                        info,
+                        periodo_inicio,
+                        periodo_fim
+                    ),
+
+                    info["modulo"]
+                )
+
             )
+
+        if tarefas:
+
+            await executar_lote(
+                tarefas
+            )
+
+        for info in sequenciais:
+
+            print(
+                f"\nExecutando sequencial: {info['modulo']}"
+            )
+
+            try:
+
+                await executar_relatorio(
+
+                    baixar_um_relatorio(
+                        context,
+                        info,
+                        periodo_inicio,
+                        periodo_fim
+                    ),
+
+                    info["modulo"]
+
+                )
+
+            except Exception:
+
+                pass
 
         exibir_resumo_final()
 
