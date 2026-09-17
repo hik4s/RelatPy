@@ -45,6 +45,11 @@ RELATORIOS = [
     "empresa_desejada": "ESS",
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupevento",
     "formato_data": "datahora"
+    },
+    {
+    "modulo": "iqos_resultados",
+    "url": "https://indicadoresenergisaess.scl.corp/iqos/#/listaresultados",
+    "nome_arquivo": "ATENDIMENTO_CHEIO"
     }
     # --- Exemplo de como adicionar o 2º relatório ---
     # Copie relatorios/_template.py para relatorios/nome_do_relatorio.py,

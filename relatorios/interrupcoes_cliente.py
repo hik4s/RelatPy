@@ -52,6 +52,7 @@ async def preencher_datas_interrupcoes(
     )
 
     if total < 2:
+
         raise Exception(
             "Não foram encontrados os campos de data."
         )
@@ -78,6 +79,43 @@ async def preencher_datas_interrupcoes(
         "Campo fim:",
         await campo_fim.input_value()
     )
+
+
+async def desativar_candidato_calculo(
+    page
+):
+
+    try:
+
+        switch = page.locator(
+            "p-inputswitch"
+        ).nth(0)
+
+        checkbox = switch.locator(
+            'input[role="switch"]'
+        )
+
+        marcado = await checkbox.is_checked()
+
+        if marcado:
+
+            await switch.click()
+
+            print(
+                "[OK] Candidato ao cálculo desativado."
+            )
+
+        else:
+
+            print(
+                "[INFO] Candidato ao cálculo já estava desativado."
+            )
+
+    except Exception as erro:
+
+        raise Exception(
+            f"Erro ao alterar Candidato ao cálculo: {erro}"
+        )
 
 
 async def abrir_relatorio_interrupcoes(
@@ -136,7 +174,19 @@ async def processar(
     )
 
     print(
-        "3- Pesquisando"
+        "3- Desativando Candidato ao cálculo"
+    )
+
+    await desativar_candidato_calculo(
+        page
+    )
+
+    await page.wait_for_timeout(
+        1000
+    )
+
+    print(
+        "4- Pesquisando"
     )
 
     await pesquisar(page)
@@ -146,7 +196,7 @@ async def processar(
     )
 
     print(
-        "3.1- Abrindo aba Interrupções"
+        "5- Abrindo aba Interrupções"
     )
 
     await abrir_relatorio_interrupcoes(
@@ -154,31 +204,31 @@ async def processar(
     )
 
     print(
-        "4- Exportando"
+        "6- Exportando"
     )
 
     await exportar(page)
 
     print(
-        "5- Confirmando"
+        "7- Confirmando"
     )
 
     await apertar_ok(page)
 
     print(
-        "6- Atualizando página"
+        "8- Atualizando página"
     )
 
     await atualizar_pagina(page)
 
     print(
-        "7- Abrindo downloads"
+        "9- Abrindo downloads"
     )
 
     await abrir_downloads(page)
 
     print(
-        "8- Aguardando processamento"
+        "10- Aguardando processamento"
     )
 
     status_exportacao = await aguardar_processamento(
@@ -197,13 +247,13 @@ async def processar(
         }
 
     print(
-        "9- Reabrindo downloads"
+        "11- Reabrindo downloads"
     )
 
     await abrir_downloads(page)
 
     print(
-        "10- Baixando arquivo"
+        "12- Baixando arquivo"
     )
 
     await baixar_arquivo(
