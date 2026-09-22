@@ -72,10 +72,6 @@ build/
 dist/
 *.spec
 
-# Executaveis e instaladores gerados
-*.exe
-*.msi
-
 # Arquivos de log e diagnostico
 *.log
 *.trace
