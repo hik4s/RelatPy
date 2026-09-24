@@ -696,19 +696,7 @@ git commit -m "Finaliza projeto RelatPy e documentação de portfólio"
 git push
 ```
 
-## Observação sobre confidencialidade
-
-O projeto automatiza sistemas internos. Para apresentação pública em portfólio, recomenda-se:
-
-- remover URLs internas;
-- substituir nomes de servidores por exemplos genéricos;
-- não publicar credenciais;
-- não publicar relatórios reais;
-- não publicar dados operacionais;
-- usar screenshots com informações sensíveis ocultadas;
-- confirmar autorização antes de tornar o código público.
-
-## Autor
+## Autor: Kauan Inacio dos Santos
 
 Projeto desenvolvido como iniciativa prática de automação e aprendizado em Python, com foco em confiabilidade, segurança defensiva e experiência de uso.
 
