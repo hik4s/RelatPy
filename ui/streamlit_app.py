@@ -50,6 +50,10 @@ CAMINHO_PID_WORKER = (
     PASTA_STATUS
     / "worker.pid"
 )
+CAMINHO_CONFIG_EXECUCAO = (
+    PASTA_STATUS
+    / "execucao.json"
+)
 
 PASTA_DOWNLOADS = (
     RAIZ
@@ -290,6 +294,20 @@ def limpar_status_json():
 
 
 garantir_status_json()
+
+
+def carregar_config_execucao():
+    """Carrega as opções da execução atual ou mais recente."""
+    if not CAMINHO_CONFIG_EXECUCAO.is_file():
+        return {"enviar_para_rede": True}
+    try:
+        dados = json.loads(CAMINHO_CONFIG_EXECUCAO.read_text(encoding="utf-8"))
+        if not isinstance(dados, dict):
+            return {"enviar_para_rede": True}
+        dados["enviar_para_rede"] = bool(dados.get("enviar_para_rede", True))
+        return dados
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError):
+        return {"enviar_para_rede": True}
 
 
 # =====================================================
@@ -756,7 +774,8 @@ def limpar_logs_antigos():
 def preparar_log_worker(
     periodo_inicio,
     periodo_fim,
-    modulos_selecionados
+    modulos_selecionados,
+    enviar_para_rede,
 ):
     """
     Cria um worker.log novo e registra imediatamente
@@ -810,6 +829,11 @@ def preparar_log_worker(
 
     log.write(
         f"Período final: {periodo_fim}\n"
+    )
+    log.write(
+        "Envio para a rede: "
+        + ("habilitado" if enviar_para_rede else "desabilitado")
+        + "\n"
     )
 
     log.write(
@@ -895,7 +919,8 @@ def limpar_downloads_antigos():
 def iniciar_execucao(
     periodo_inicio,
     periodo_fim,
-    modulos_selecionados
+    modulos_selecionados,
+    enviar_para_rede=True,
 ):
     if execucao_ativa():
 
@@ -969,24 +994,36 @@ def iniciar_execucao(
     ] = "1"
 
     modulos_json = json.dumps(
-    modulos_selecionados,
-    ensure_ascii=False
-)
+        modulos_selecionados,
+        ensure_ascii=False,
+    )
 
     comando = [
-    str(PYTHON_WORKER),
+        str(PYTHON_WORKER),
+        "-u",
+        str(WORKER),
+        periodo_inicio,
+        periodo_fim,
+        modulos_json,
+        "true" if enviar_para_rede else "false",
+    ]
 
-    "-u",
-
-    str(WORKER),
-    periodo_inicio,
-    periodo_fim,
-    modulos_json ]
+    gravar_json_atomico(
+        CAMINHO_CONFIG_EXECUCAO,
+        {
+            "periodo_inicio": periodo_inicio,
+            "periodo_fim": periodo_fim,
+            "modulos": modulos_selecionados,
+            "enviar_para_rede": enviar_para_rede,
+            "criado_em": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+        },
+    )
 
     log = preparar_log_worker(
-    periodo_inicio,
-    periodo_fim,
-    modulos_selecionados
+        periodo_inicio,
+        periodo_fim,
+        modulos_selecionados,
+        enviar_para_rede,
     )
 
     configuracao = {
@@ -1471,6 +1508,22 @@ else:
         "para iniciar a execução."
     )
 
+st.subheader("Opções de entrega")
+enviar_para_rede = st.checkbox(
+    "Enviar arquivos para as pastas de rede",
+    value=True,
+    disabled=execucao_ativa(),
+    help=(
+        "Quando habilitado, copia os arquivos para os destinos configurados. "
+        "Quando desabilitado, mantém somente os arquivos locais."
+    ),
+    key="enviar_para_rede",
+)
+st.caption(
+    "Envio para a rede: "
+    + ("habilitado" if enviar_para_rede else "desabilitado")
+)
+
 em_execucao = execucao_ativa()
 
 coluna_executar, coluna_parar, coluna_atualizar = (
@@ -1569,7 +1622,8 @@ if executar:
             resultado_inicio = iniciar_execucao(
                 periodo_inicio,
                 periodo_fim,
-                modulos_selecionados
+                modulos_selecionados,
+                enviar_para_rede,
             )
 
             pid = resultado_inicio[
@@ -1713,11 +1767,11 @@ if not status:
 
 else:
 
+    config_execucao = carregar_config_execucao()
+    envio_rede_execucao = config_execucao.get("enviar_para_rede", True)
     periodo_validacao = (
-        data_inicio.strftime(
-            "%d/%m/%Y"
-        )
-        + " 00:00:00"
+        config_execucao.get("periodo_inicio")
+        or data_inicio.strftime("%d/%m/%Y") + " 00:00:00"
     )
 
     modulos_ordenados = sorted(
@@ -1768,10 +1822,10 @@ else:
             arquivo_local
         )
 
-        rede_ok = arquivo_rede_existe(
-            modulo,
-            periodo_validacao,
-            arquivo_rede
+        rede_ok = (
+            arquivo_rede_existe(modulo, periodo_validacao, arquivo_rede)
+            if envio_rede_execucao
+            else True
         )
 
         mensagem = (
@@ -1801,25 +1855,19 @@ else:
                     "\n\n⚠️ Arquivo local não informado."
                 )
 
-            if rede_ok:
-
+            if not envio_rede_execucao:
                 mensagem += (
-                    "\n\n📤 Arquivo encontrado na rede."
+                    "\n\nℹ️ Envio para a rede desabilitado nesta execução."
                 )
-
+            elif rede_ok:
+                mensagem += "\n\n📤 Arquivo encontrado na rede."
             elif arquivo_rede:
-
                 mensagem += (
-                    "\n\n❌ Arquivo de rede registrado, "
-                    "mas não encontrado:\n"
+                    "\n\n❌ Arquivo de rede registrado, mas não encontrado:\n"
                     f"{arquivo_rede}"
                 )
-
             else:
-
-                mensagem += (
-                    "\n\n❌ Arquivo não registrado na rede."
-                )
+                mensagem += "\n\n❌ Arquivo não registrado na rede."
 
             if (
                 local_ok

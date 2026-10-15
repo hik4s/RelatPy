@@ -1,0 +1,1 @@
+Feche o RelatPy. Copie os arquivos preservando a pasta ui. Abra novamente e pressione Ctrl+F5.

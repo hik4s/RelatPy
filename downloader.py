@@ -256,6 +256,7 @@ async def baixar_um_relatorio(
     info,
     periodo_inicio,
     periodo_fim,
+    enviar_para_rede=True,
 ):
     """
     Abre uma página individual e executa um relatório.
@@ -454,32 +455,36 @@ async def baixar_um_relatorio(
                     f"O arquivo está vazio: {arquivo_local}"
                 )
 
-            try:
+            print(
+                f"[OK] Arquivo local: {arquivo_local}",
+                flush=True,
+            )
 
-                arquivo_rede = (
-                    copiar_relatorio_para_servidor(
+            if enviar_para_rede:
+                try:
+                    print(
+                        f"[{modulo_nome}] Enviando arquivo para a rede...",
+                        flush=True,
+                    )
+                    arquivo_rede = copiar_relatorio_para_servidor(
                         modulo=modulo_nome,
                         caminho_arquivo=arquivo_local,
                         periodo_inicio=periodo_inicio,
                     )
-                )
-
+                    print(
+                        f"[OK] Arquivo rede: {arquivo_rede}",
+                        flush=True,
+                    )
+                except Exception as erro_rede:
+                    print(
+                        "[AVISO] Falha ao enviar para rede: "
+                        f"{type(erro_rede).__name__}: {erro_rede}",
+                        flush=True,
+                    )
+            else:
                 print(
-                    f"[OK] Arquivo local: {arquivo_local}",
-                    flush=True,
-                )
-
-                print(
-                    f"[OK] Arquivo rede: {arquivo_rede}",
-                    flush=True,
-                )
-
-            except Exception as erro_rede:
-
-                print(
-                    "[AVISO] Falha ao enviar para rede: "
-                    f"{type(erro_rede).__name__}: "
-                    f"{erro_rede}",
+                    f"[{modulo_nome}] Envio para a rede desabilitado. "
+                    f"Arquivo mantido localmente: {arquivo_local}",
                     flush=True,
                 )
 
@@ -494,6 +499,8 @@ async def baixar_um_relatorio(
                 "relatorio": modulo_nome,
                 "arquivo": arquivo_local,
                 "arquivo_rede": arquivo_rede,
+                "enviar_para_rede": enviar_para_rede,
+                "enviado_para_rede": bool(arquivo_rede),
                 "status": status_resultado,
             }
         )
@@ -551,6 +558,7 @@ async def baixar_todos_os_relatorios(
     periodo_inicio,
     periodo_fim,
     modulos_selecionados=None,
+    enviar_para_rede=True,
 ):
     """
     Executa somente os relatórios selecionados.
@@ -561,6 +569,15 @@ async def baixar_todos_os_relatorios(
 
     print(
         "Entrou na função baixar_todos_os_relatorios",
+        flush=True,
+    )
+
+    if not isinstance(enviar_para_rede, bool):
+        raise TypeError("enviar_para_rede deve ser bool.")
+
+    print(
+        "Envio para a rede: "
+        + ("habilitado" if enviar_para_rede else "desabilitado"),
         flush=True,
     )
 
@@ -684,6 +701,7 @@ async def baixar_todos_os_relatorios(
                         info,
                         periodo_inicio,
                         periodo_fim,
+                        enviar_para_rede,
                     ),
                     info["modulo"],
                 )
@@ -714,6 +732,7 @@ async def baixar_todos_os_relatorios(
                             info,
                             periodo_inicio,
                             periodo_fim,
+                            enviar_para_rede,
                         ),
                         info["modulo"],
                     )

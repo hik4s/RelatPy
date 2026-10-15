@@ -20,7 +20,7 @@ RELATORIOS = [
 
     {
     "modulo": "interrupcoes_cliente",
-    "paralelo": True,
+    "paralelo": False,
     "url": "https://indicadoresenergisaess.scl.corp/sgind/#/relatinterrupcoes",
     "empresa_desejada": "ESS",
     "nome_arquivo": "Interrupcoes_Clientes.csv",
@@ -71,7 +71,7 @@ RELATORIOS = [
     "url": ("https://indicadoresenergisaess.scl.corp/sgind/#/relattarefas"),
     "empresa_desejada": "ESS",
     "nome_arquivo": "Relatorio_Tarefas.csv",
-    "paralelo": True,
+    "paralelo": False,
     },
     # --- Exemplo de como adicionar o 2º relatório ---
     # Copie relatorios/_template.py para relatorios/nome_do_relatorio.py,

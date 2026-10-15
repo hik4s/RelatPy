@@ -1,0 +1,17 @@
+{
+    "periodo_inicio": "01/10/2026 00:00:00",
+    "periodo_fim": "31/10/2026 23:59:59",
+    "modulos": [
+        "compensacao",
+        "reclamacao",
+        "interrupcoes_cliente",
+        "interrupcoes_evento",
+        "todas_ocorrencias",
+        "inconsistentes",
+        "tarefas",
+        "dia_critico",
+        "iqos_resultados"
+    ],
+    "enviar_para_rede": true,
+    "criado_em": "15/10/2026 16:43:51"
+}

@@ -141,7 +141,8 @@ def validar_modulos_selecionados(
 async def executar_relatorios(
     periodo_inicio,
     periodo_fim,
-    modulos_selecionados=None
+    modulos_selecionados=None,
+    enviar_para_rede=True,
 ):
     """
     Obtém as credenciais e inicia os relatórios.
@@ -196,12 +197,19 @@ async def executar_relatorios(
             flush=True
         )
 
+    print(
+        "[MAIN] Envio para a rede: "
+        + ("habilitado" if enviar_para_rede else "desabilitado"),
+        flush=True,
+    )
+
     await baixar_todos_os_relatorios(
         usuario,
         senha,
         periodo_inicio,
         periodo_fim,
-        modulos_selecionados
+        modulos_selecionados,
+        enviar_para_rede=enviar_para_rede,
     )
 
     print(

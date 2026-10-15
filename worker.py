@@ -131,6 +131,21 @@ def obter_modulos_selecionados():
     return selecionados
 
 
+def obter_opcao_enviar_para_rede():
+    """Lê a opção de envio para a rede, mantendo compatibilidade."""
+    if len(sys.argv) < 5:
+        return True
+    valor = str(sys.argv[4]).strip().lower()
+    if valor in {"1", "true", "sim", "yes", "on"}:
+        return True
+    if valor in {"0", "false", "nao", "não", "no", "off"}:
+        return False
+    raise ValueError(
+        "A opção de envio para a rede é inválida. "
+        f"Valor recebido: {sys.argv[4]!r}"
+    )
+
+
 # =====================================================
 # VALIDAÇÃO DO PERÍODO
 # =====================================================
@@ -273,11 +288,11 @@ def main():
             "\"[\\\"modulo_1\\\", \\\"modulo_2\\\"]\""
         )
 
-    if len(sys.argv) > 4:
+    if len(sys.argv) > 5:
         raise ValueError(
             "O worker recebeu argumentos além do esperado. "
-            "São aceitos o período inicial, o período final "
-            "e, opcionalmente, o JSON dos relatórios."
+            "São aceitos o período inicial, o período final, "
+            "o JSON dos relatórios e a opção de envio para a rede."
         )
 
     periodo_inicio = sys.argv[1]
@@ -285,6 +300,13 @@ def main():
 
     modulos_selecionados = (
         obter_modulos_selecionados()
+    )
+    enviar_para_rede = obter_opcao_enviar_para_rede()
+
+    print(
+        "[WORKER] Envio para a rede: "
+        + ("habilitado" if enviar_para_rede else "desabilitado"),
+        flush=True,
     )
 
     print(
@@ -318,6 +340,7 @@ def main():
             periodo_inicio,
             periodo_fim,
             modulos_selecionados,
+            enviar_para_rede,
         )
     )
 
